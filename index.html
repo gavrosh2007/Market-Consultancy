@@ -29,8 +29,12 @@
         .lang-btn.active { background: #e8491d; color: white; }
 
         .install-area { text-align: center; margin: 0.5rem 0 1.5rem; }
-        .pwa-icon-btn { background: none; border: none; cursor: pointer; display: inline-flex; flex-direction: column; align-items: center; gap: 0.3rem; font-weight: 600; color: #e8491d; }
-        .pwa-icon-btn img { width: 96px; height: 96px; border-radius: 18px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        .install-tooltip { position: relative; display: inline-block; }
+        .pwa-icon-btn { background: none; border: none; cursor: pointer; display: inline-flex; flex-direction: column; align-items: center; gap: 0.3rem; font-weight: 600; color: #e8491d; padding: 8px 16px; background: transparent; transition: 0.2s; }
+        .pwa-icon-btn img { width: 96px; height: 96px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .tooltip-text { visibility: hidden; background-color: #1e2b4f; color: #fff; text-align: center; border-radius: 6px; padding: 5px 10px; position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 0.7rem; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 20; }
+        .install-tooltip:hover .tooltip-text { visibility: visible; opacity: 1; }
+        @media (max-width: 600px) { .pwa-icon-btn img { width: 64px; height: 64px; } .tooltip-text { white-space: normal; width: 200px; bottom: 130%; } }
 
         .hero-explain { background: rgba(255,255,250,0.5); backdrop-filter: blur(20px); border-radius: 48px; padding: 2rem; margin-bottom: 2rem; text-align: center; border: 1px solid rgba(255,255,255,0.7); }
         .hero-explain h1 { font-size: 2.2rem; color: #e8491d; margin-bottom: 1rem; }
@@ -74,13 +78,17 @@
     </header>
 
     <div class="install-area">
-        <button id="pwaInstallIcon" class="pwa-icon-btn">
-            <img src="icon-192x192.png" width="96" height="96" alt="Установить">
-            <span id="pwaBtnText">Установить приложение</span>
-        </button>
+        <div class="install-tooltip">
+            <button id="pwaInstallIcon" class="pwa-icon-btn">
+                <img src="icon-192x192.png" alt="Установить" width="96" height="96" onerror="this.style.display='none'; this.parentNode.querySelector('.fallback-text').style.display='inline-block';">
+                <span class="fallback-text" style="display:none;">📱</span>
+                <span id="pwaBtnText">Установить приложение</span>
+            </button>
+            <span class="tooltip-text" id="pwaTooltip">💡 Нажмите — установите как приложение.<br>• Chrome/Edge: появится диалог.<br>• iPhone: Поделиться → На экран «Домой».</span>
+        </div>
     </div>
 
-    <!-- СТРАНИЦА 1: ГЛАВНАЯ С КЛЮЧЕВЫМ СООБЩЕНИЕМ -->
+    <!-- СТРАНИЦА 1: ГЛАВНАЯ -->
     <div id="mainPage" style="display: block;">
         <div class="hero-explain">
             <h1 id="mainTitle">🔍 Что делает HM&BC?</h1>
@@ -109,7 +117,7 @@
         <div class="simple-grid" id="quickTips"></div>
     </div>
 
-    <!-- СТРАНИЦА 2: КАК ВЫБРАТЬ КОНТРАГЕНТА (брокера, фонд, риэлтера) -->
+    <!-- СТРАНИЦА 2: КАК ВЫБРАТЬ -->
     <div id="howItWorksPage" style="display: none;">
         <div class="hero-explain">
             <h1 id="howTitle">📘 Как выбрать брокера / фонд / риэлтера?</h1>
@@ -122,7 +130,7 @@
         </div>
     </div>
 
-    <!-- СТРАНИЦА 3: ТИПЫ КОНТРАГЕНТОВ (без имён) -->
+    <!-- СТРАНИЦА 3: ТИПЫ -->
     <div id="brokersPage" style="display: none;">
         <div class="hero-explain">
             <h1 id="brokersTitle">⭐ Типы надёжных контрагентов</h1>
@@ -162,15 +170,20 @@
     const bgImages = ['bg1.jpg', 'bg2.jpg', 'bg3.jpg', 'bg4.jpg'];
     document.getElementById('bgLayer').style.backgroundImage = `url(${bgImages[Math.floor(Math.random() * bgImages.length)]})`;
 
-    // ---------- PWA ----------
+    // ---------- PWA УСТАНОВКА (механизм из твоего кода) ----------
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-    document.getElementById('pwaInstallIcon')?.addEventListener('click', async () => {
-        if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; }
-        else alert('Для установки: Chrome/Edge — значок ⬇️ в адресной строке, iPhone — Поделиться → На экран «Домой»');
+    document.getElementById('pwaInstallIcon').addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice;
+            deferredPrompt = null;
+        } else {
+            alert(currentLang === 'ru' ? 'Для установки: Chrome/Edge — значок ⬇️ в адресной строке, iPhone — Поделиться → На экран "Домой"' : 'To install: Chrome/Edge — ⬇️ icon in address bar, iPhone — Share → Add to Home Screen');
+        }
     });
 
-    // ---------- ВНУТРЕННЯЯ БАЗА (обобщённая, без имён) ----------
+    // ---------- ВНУТРЕННЯЯ БАЗА ----------
     const partnersData = {
         conservative: [
             { type: "Консервативный брокер", license: "FCA / CySEC", fee: "Спред от 0.1%, низкая комиссия", protection: "Страхование до €20 000", minDeposit: 0 },
@@ -195,7 +208,7 @@
         return { ...rec, expectedReturn: expected };
     }
 
-    // ---------- ЯЗЫКИ (ру / англ) с переводом для кнопок меню ----------
+    // ---------- ЯЗЫКИ ----------
     let currentLang = 'ru';
     const translations = {
         ru: {
@@ -211,16 +224,13 @@
             brokersTitle: '⭐ Типы надёжных контрагентов', brokersDesc: 'Мы проверяем лицензии, комиссии, защиту средств. Ниже — типы брокеров, фондов и риэлтеров, которым можно доверять. Конкретные названия — только в платном отчёте.',
             reportTitle: '📄 Детальный инвестиционный отчёт', reportDesc: 'Вы платите за глубокий анализ: оптимальный контрагент (конкретное название брокера, фонда или риэлтера), стратегия входа и прогноз. Никаких гарантий прибыли — только честный расчёт и рекомендации.',
             pwaBtn: 'Установить приложение',
+            pwaTooltip: '💡 Нажмите — установите как приложение.\n• Chrome/Edge: появится диалог.\n• iPhone: Поделиться → На экран «Домой».',
             catConservative: '🛡️ Консервативные', catHybrid: '⚖️ Гибридные', catAggressive: '🚀 Рисковые',
             step1: '1️⃣ Проверьте лицензию', step1text: 'Номер лицензии должен быть на сайте. Сверьте с реестром CySEC, FCA или местным регулятором.',
             step2: '2️⃣ Посчитайте комиссию', step2text: 'Спред, комиссия за сделку, плата за вывод — всё это влияет на вашу прибыль.',
             step3: '3️⃣ Узнайте, где лежат ваши деньги', step3text: 'Средства должны быть на отдельных счетах, а не в одном кошельке с деньгами контрагента.',
             step4: '4️⃣ Начните с малого / демо-счёта', step4text: 'Потренируйтесь на виртуальных деньгах или с небольшой суммой.',
-            // ===== ПЕРЕВОД ДЛЯ КНОПОК МЕНЮ (ДОБАВЛЕНО) =====
-            navHome: '🏠 Главная',
-            navHowItWorks: '📘 Как выбрать?',
-            navBrokers: '⭐ Типы',
-            navReport: '📊 Платный отчёт'
+            navHome: '🏠 Главная', navHowItWorks: '📘 Как выбрать?', navBrokers: '⭐ Типы', navReport: '📊 Платный отчёт'
         },
         en: {
             mainTitle: '🔍 What does HM&BC do?',
@@ -235,16 +245,13 @@
             brokersTitle: '⭐ Types of reliable counterparties', brokersDesc: 'We check licenses, fees, asset protection. Below are types of brokers, funds and realtors you can trust. Specific names — only in the paid report.',
             reportTitle: '📄 Detailed investment report', reportDesc: 'You pay for in‑depth analysis: optimal counterparty (specific name of broker, fund or realtor), entry strategy and forecast. No profit guarantees — only honest calculation and recommendations.',
             pwaBtn: 'Install app',
+            pwaTooltip: '💡 Click — install as app.\n• Chrome/Edge: dialog appears.\n• iPhone: Share → Add to Home Screen.',
             catConservative: '🛡️ Conservative', catHybrid: '⚖️ Hybrid', catAggressive: '🚀 Aggressive',
             step1: '1️⃣ Check license', step1text: 'The license number must be on the website. Verify with CySEC, FCA or local regulator.',
             step2: '2️⃣ Count fees', step2text: 'Spread, commission per trade, withdrawal fee — all affect your profit.',
             step3: '3️⃣ Know where your money is kept', step3text: 'Funds must be in segregated accounts, not mixed with counterparty\'s money.',
             step4: '4️⃣ Start small / demo account', step4text: 'Practice with virtual money or a small amount.',
-            // ===== ПЕРЕВОД ДЛЯ КНОПОК МЕНЮ (ДОБАВЛЕНО) =====
-            navHome: '🏠 Home',
-            navHowItWorks: '📘 How to choose?',
-            navBrokers: '⭐ Types',
-            navReport: '📊 Paid report'
+            navHome: '🏠 Home', navHowItWorks: '📘 How to choose?', navBrokers: '⭐ Types', navReport: '📊 Paid report'
         }
     };
 
@@ -267,45 +274,23 @@
         document.getElementById('reportTitle').innerText = t.reportTitle;
         document.getElementById('reportDesc').innerText = t.reportDesc;
         document.getElementById('pwaBtnText').innerText = t.pwaBtn;
-        
-        // ===== ПЕРЕВОД КНОПОК МЕНЮ (ДОБАВЛЕНО) =====
+        document.getElementById('pwaTooltip').innerHTML = t.pwaTooltip;
         document.getElementById('navHomeBtn').innerHTML = t.navHome;
         document.getElementById('navHowItWorksBtn').innerHTML = t.navHowItWorks;
         document.getElementById('navBrokersBtn').innerHTML = t.navBrokers;
         document.getElementById('navReportBtn').innerHTML = t.navReport;
-        
         document.getElementById('footer-ru').style.display = currentLang === 'ru' ? 'block' : 'none';
         document.getElementById('footer-en').style.display = currentLang === 'en' ? 'block' : 'none';
 
         const tipsDiv = document.getElementById('quickTips');
         if (currentLang === 'ru') {
-            tipsDiv.innerHTML = `
-                <div class="simple-card"><h3>💡 Что такое спред?</h3><p>Спред — разница между ценой покупки и продажи. Чем ниже спред, тем дешевле торговать.</p></div>
-                <div class="simple-card"><h3>🏛️ Зачем нужна лицензия?</h3><p>Лицензия — гарантия, что ваши деньги не украдут и они на отдельных счетах.</p></div>
-                <div class="simple-card"><h3>📉 Риск — это нормально</h3><p>Чем выше риск, тем больше потенциальный доход — но и потерять можно больше.</p></div>
-            `;
+            tipsDiv.innerHTML = `<div class="simple-card"><h3>💡 Что такое спред?</h3><p>Спред — разница между ценой покупки и продажи. Чем ниже спред, тем дешевле торговать.</p></div><div class="simple-card"><h3>🏛️ Зачем нужна лицензия?</h3><p>Лицензия — гарантия, что ваши деньги не украдут и они на отдельных счетах.</p></div><div class="simple-card"><h3>📉 Риск — это нормально</h3><p>Чем выше риск, тем больше потенциальный доход — но и потерять можно больше.</p></div>`;
         } else {
-            tipsDiv.innerHTML = `
-                <div class="simple-card"><h3>💡 What is a spread?</h3><p>Spread is the difference between buy and sell price. Lower spread → cheaper trading.</p></div>
-                <div class="simple-card"><h3>🏛️ Why license matters?</h3><p>A license guarantees your money is segregated and safe.</p></div>
-                <div class="simple-card"><h3>📉 Risk is normal</h3><p>Higher risk may bring higher return — but also higher potential loss.</p></div>
-            `;
+            tipsDiv.innerHTML = `<div class="simple-card"><h3>💡 What is a spread?</h3><p>Spread is the difference between buy and sell price. Lower spread → cheaper trading.</p></div><div class="simple-card"><h3>🏛️ Why license matters?</h3><p>A license guarantees your money is segregated and safe.</p></div><div class="simple-card"><h3>📉 Risk is normal</h3><p>Higher risk may bring higher return — but also higher potential loss.</p></div>`;
         }
 
-        const stepsGrid = document.getElementById('stepsGrid');
-        stepsGrid.innerHTML = `
-            <div class="simple-card"><h3>${t.step1}</h3><p>${t.step1text}</p></div>
-            <div class="simple-card"><h3>${t.step2}</h3><p>${t.step2text}</p></div>
-            <div class="simple-card"><h3>${t.step3}</h3><p>${t.step3text}</p></div>
-            <div class="simple-card"><h3>${t.step4}</h3><p>${t.step4text}</p></div>
-        `;
-
-        const brokersGrid = document.getElementById('brokersGrid');
-        brokersGrid.innerHTML = `
-            <div class="simple-card"><h3>🛡️ ${t.catConservative}</h3><p>${currentLang === 'ru' ? 'Надёжные лицензии (CySEC, FCA). Низкие комиссии, защита до €20 000. Примеры: традиционные брокеры и фонды.' : 'Reliable licenses (CySEC, FCA). Low fees, protection up to €20 000.'}</p></div>
-            <div class="simple-card"><h3>⚖️ ${t.catHybrid}</h3><p>${currentLang === 'ru' ? 'Баланс риска и доходности. Доступ к ETF, копирование сделок, средние комиссии.' : 'Balance of risk and return. Access to ETFs, copy trading, medium fees.'}</p></div>
-            <div class="simple-card"><h3>🚀 ${t.catAggressive}</h3><p>${currentLang === 'ru' ? 'Высокая волатильность, криптоактивы, венчурные фонды. Потенциально высокая доходность — но и риск полной потери.' : 'High volatility, crypto assets, venture funds. Potentially high return — but also risk of total loss.'}</p></div>
-        `;
+        document.getElementById('stepsGrid').innerHTML = `<div class="simple-card"><h3>${t.step1}</h3><p>${t.step1text}</p></div><div class="simple-card"><h3>${t.step2}</h3><p>${t.step2text}</p></div><div class="simple-card"><h3>${t.step3}</h3><p>${t.step3text}</p></div><div class="simple-card"><h3>${t.step4}</h3><p>${t.step4text}</p></div>`;
+        document.getElementById('brokersGrid').innerHTML = `<div class="simple-card"><h3>🛡️ ${t.catConservative}</h3><p>${currentLang === 'ru' ? 'Надёжные лицензии (CySEC, FCA). Низкие комиссии, защита до €20 000. Примеры: традиционные брокеры и фонды.' : 'Reliable licenses (CySEC, FCA). Low fees, protection up to €20 000.'}</p></div><div class="simple-card"><h3>⚖️ ${t.catHybrid}</h3><p>${currentLang === 'ru' ? 'Баланс риска и доходности. Доступ к ETF, копирование сделок, средние комиссии.' : 'Balance of risk and return. Access to ETFs, copy trading, medium fees.'}</p></div><div class="simple-card"><h3>🚀 ${t.catAggressive}</h3><p>${currentLang === 'ru' ? 'Высокая волатильность, криптоактивы, венчурные фонды. Потенциально высокая доходность — но и риск полной потери.' : 'High volatility, crypto assets, venture funds. Potentially high return — but also risk of total loss.'}</p></div>`;
     }
 
     function setLanguage(lang) {
@@ -316,11 +301,8 @@
     }
 
     const savedLang = localStorage.getItem('hmbc_language');
-    if (savedLang && (savedLang === 'ru' || savedLang === 'en')) {
-        currentLang = savedLang;
-    } else {
-        currentLang = 'ru';
-    }
+    if (savedLang && (savedLang === 'ru' || savedLang === 'en')) currentLang = savedLang;
+    else currentLang = 'ru';
 
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
@@ -328,19 +310,8 @@
 
     function showRecommendationUI(rec) {
         const t = translations[currentLang];
-        const resultDiv = document.getElementById('resultBlock');
-        resultDiv.innerHTML = `
-            <div class="result-card">
-                <h3>${t.recommended}: ${rec.type}</h3>
-                <p><strong>${t.license}:</strong> ${rec.license}</p>
-                <p><strong>${t.fee}:</strong> ${rec.fee}</p>
-                <p><strong>💰 Прогнозная доходность:</strong> ~${rec.expectedReturn}% годовых</p>
-                <p><strong>${t.protection}:</strong> ${rec.protection}</p>
-                <p><strong>${t.minDeposit}:</strong> ${rec.minDeposit} €</p>
-                <button id="orderReportBtn" class="btn-primary">${t.getFull}</button>
-            </div>
-        `;
-        resultDiv.style.display = 'block';
+        document.getElementById('resultBlock').innerHTML = `<div class="result-card"><h3>${t.recommended}: ${rec.type}</h3><p><strong>${t.license}:</strong> ${rec.license}</p><p><strong>${t.fee}:</strong> ${rec.fee}</p><p><strong>💰 Прогнозная доходность:</strong> ~${rec.expectedReturn}% годовых</p><p><strong>${t.protection}:</strong> ${rec.protection}</p><p><strong>${t.minDeposit}:</strong> ${rec.minDeposit} €</p><button id="orderReportBtn" class="btn-primary">${t.getFull}</button></div>`;
+        document.getElementById('resultBlock').style.display = 'block';
         document.getElementById('orderReportBtn')?.addEventListener('click', () => {
             document.getElementById('mainPage').style.display = 'none';
             document.getElementById('reportPage').style.display = 'block';
