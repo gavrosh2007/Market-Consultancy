@@ -1,0 +1,36 @@
+const CACHE_NAME = 'hmbc-v2';
+const urlsToCache = [
+  './',
+  './index.html',
+  './offline.html',
+  './manifest.json',
+  './icon-72x72.png',
+  './icon-96x96.png',
+  './icon-128x128.png',
+  './icon-144x144.png',
+  './icon-152x152.png',
+  './icon-192x192.png',
+  './icon-384x384.png',
+  './icon-512x512.png'
+];
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    fetch(event.request).catch(() => {
+      return caches.match(event.request).then(cached => {
+        if (cached) return cached;
+        if (event.request.mode === 'navigate') {
+          return caches.match('./offline.html');
+        }
+        return new Response('Офлайн', { status: 503 });
+      });
+    })
+  );
+});

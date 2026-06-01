@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="robots" content="noai, noimageai, nocrawl">
+    <title>HM&BC Market Consultancy</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="HM&BC">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#e8491d">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+        body { min-height: 100vh; background: #f5f7fc; position: relative; display: flex; flex-direction: column; }
+        .bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; z-index: -2; transition: 0.3s; }
+        .bg-layer::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,245,0.15); pointer-events: none; }
+        .container { position: relative; z-index: 1; max-width: 1300px; margin: 0 auto; padding: 1.5rem; flex: 1; }
+
+        header { background: rgba(255,255,245,0.45); backdrop-filter: blur(16px); border-radius: 60px; padding: 0.8rem 1.8rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border: 1px solid rgba(232,73,29,0.25); }
+        .logo h1 { font-size: 1.9rem; color: #e8491d; font-weight: 700; }
+        .logo p { font-size: 0.7rem; color: #2c3e50; }
+        .nav-links { display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap; }
+        .nav-btn { background: rgba(255,255,245,0.55); border: 1px solid rgba(232,73,29,0.2); color: #2c2c3a; padding: 0.5rem 1.2rem; border-radius: 40px; cursor: pointer; font-weight: 500; transition: 0.2s; }
+        .nav-btn:hover { background: #e8491d; color: white; }
+        .lang-switch { display: flex; gap: 0.8rem; }
+        .lang-btn { background: rgba(255,255,245,0.55); border: 1px solid rgba(232,73,29,0.2); padding: 0.3rem 0.9rem; border-radius: 30px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        .lang-btn.active { background: #e8491d; color: white; }
+
+        .install-area { text-align: center; margin: 0.5rem 0 1.5rem; }
+        .pwa-icon-btn { background: none; border: none; cursor: pointer; display: inline-flex; flex-direction: column; align-items: center; gap: 0.3rem; font-weight: 600; color: #e8491d; }
+        .pwa-icon-btn img { width: 96px; height: 96px; border-radius: 18px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+
+        .hero-explain { background: rgba(255,255,250,0.5); backdrop-filter: blur(20px); border-radius: 48px; padding: 2rem; margin-bottom: 2rem; text-align: center; border: 1px solid rgba(255,255,255,0.7); }
+        .hero-explain h1 { font-size: 2.2rem; color: #e8491d; margin-bottom: 1rem; }
+        .hero-explain p { font-size: 1.1rem; color: #1e2a3a; line-height: 1.5; max-width: 800px; margin: 0 auto; }
+
+        .glass-card { background: rgba(255,255,250,0.45); backdrop-filter: blur(16px); border-radius: 32px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.6); }
+        .form-row { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .form-group { flex: 1; min-width: 180px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.3rem; color: #1e2a3a; }
+        .form-group input, .form-group select { width: 100%; padding: 0.8rem 1rem; border-radius: 28px; border: 1px solid rgba(232,73,29,0.25); background: rgba(255,255,255,0.7); font-size: 1rem; }
+        .btn-primary { background: #e8491d; color: white; border: none; padding: 0.8rem 2rem; border-radius: 40px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+        .result-card { background: rgba(255,255,250,0.6); backdrop-filter: blur(12px); border-radius: 32px; padding: 1.5rem; margin-top: 1rem; border-left: 5px solid #e8491d; }
+
+        .simple-grid { display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 2rem 0; }
+        .simple-card { background: rgba(255,255,250,0.45); backdrop-filter: blur(12px); border-radius: 28px; padding: 1.2rem; flex: 1; }
+        .simple-card h3 { color: #e8491d; margin-bottom: 0.8rem; }
+
+        .advert-note { background: rgba(232,73,29,0.1); border-radius: 28px; padding: 1rem; margin-top: 1rem; text-align: center; font-size: 0.85rem; border: 1px dashed rgba(232,73,29,0.3); }
+
+        footer { margin-top: 2rem; text-align: center; font-size: 0.75rem; color: #5a6e7a; padding: 1rem; }
+        footer a { color: #e8491d; text-decoration: none; margin: 0 0.3rem; }
+
+        @media (max-width: 700px) { .container { padding: 1rem; } .form-row { flex-direction: column; } .hero-explain h1 { font-size: 1.6rem; } }
+    </style>
+</head>
+<body>
+<div class="bg-layer" id="bgLayer"></div>
+<div class="container">
+    <header>
+        <div class="logo"><h1>HM&BC</h1><p>Market Consultancy</p></div>
+        <div class="nav-links">
+            <div class="lang-switch">
+                <button class="lang-btn active" data-lang="ru">RU</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+            </div>
+            <button class="nav-btn" id="navHomeBtn">🏠 Главная</button>
+            <button class="nav-btn" id="navHowItWorksBtn">📘 Как выбрать?</button>
+            <button class="nav-btn" id="navBrokersBtn">⭐ Типы</button>
+            <button class="nav-btn" id="navReportBtn">📊 Платный отчёт</button>
+        </div>
+    </header>
+
+    <div class="install-area">
+        <button id="pwaInstallIcon" class="pwa-icon-btn">
+            <img src="icon-192x192.png" width="96" height="96" alt="Установить">
+            <span id="pwaBtnText">Установить приложение</span>
+        </button>
+    </div>
+
+    <!-- СТРАНИЦА 1: ГЛАВНАЯ С КЛЮЧЕВЫМ СООБЩЕНИЕМ -->
+    <div id="mainPage" style="display: block;">
+        <div class="hero-explain">
+            <h1 id="mainTitle">🔍 Что делает HM&BC?</h1>
+            <p id="mainDesc">Мы консультируем по ЛЮБЫМ инвестиционным инструментам: акции, облигации, ETF, криптовалюты, недвижимость, венчурные фонды, паевые фонды, прямые инвестиции. Мы проверяем ЛЮБЫХ брокеров, фонды, риэлтеров, биржи, управляющие компании. Бесплатная часть — общая проверка и категории. Платный отчёт — персональная рекомендация.</p>
+            <div class="advert-note" id="advertNote">⭐ Здесь может быть ваша компания (брокер, фонд, риэлтер, биржа), если у вас есть лицензия и вы хотите предложить свои услуги нашим пользователям (размещение рекламы). Свяжитесь с нами.</div>
+        </div>
+
+        <div class="glass-card">
+            <h3 id="calcTitle">📝 Ваши параметры</h3>
+            <div class="form-row">
+                <div class="form-group"><label id="amountLabel">💰 Сумма (€)</label><input type="number" id="amount" value="10000" step="1000"></div>
+                <div class="form-group"><label id="horizonLabel">⏱ Горизонт (лет)</label><input type="number" id="years" value="2" step="1"></div>
+                <div class="form-group"><label id="riskLabel">⚖️ Риск-профиль</label>
+                    <select id="risk">
+                        <option value="conservative">Консервативный (сплю спокойно)</option>
+                        <option value="hybrid">Гибридный (немного риска, хочу доход выше)</option>
+                        <option value="aggressive">Агрессивный (готов к качелям)</option>
+                    </select>
+                </div>
+            </div>
+            <div style="text-align: center;"><button id="getRecommendBtn" class="btn-primary">🔍 Подобрать инструмент / контрагента</button></div>
+            <div id="resultBlock" style="display: none;"></div>
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;" id="freeNote">Бесплатно — только общая категория (консервативные, гибридные, агрессивные). Конкретные названия брокеров, фондов, риэлтеров и стратегию вы получите в платном отчёте.</p>
+        </div>
+
+        <div class="simple-grid" id="quickTips"></div>
+    </div>
+
+    <!-- СТРАНИЦА 2: КАК ВЫБРАТЬ КОНТРАГЕНТА (брокера, фонд, риэлтера) -->
+    <div id="howItWorksPage" style="display: none;">
+        <div class="hero-explain">
+            <h1 id="howTitle">📘 Как выбрать брокера / фонд / риэлтера?</h1>
+            <p id="howDesc">Универсальные шаги для любой инвестиционной структуры.</p>
+        </div>
+        <div class="simple-grid" id="stepsGrid"></div>
+        <div class="glass-card">
+            <h3 id="checkLicenseTitle">🔐 Что проверять в первую очередь?</h3>
+            <p id="checkLicenseText">Лицензию / регистрацию. Для брокеров — CySEC, FCA, CFTC. Для фондов — регистрацию проспекта. Для риэлтеров — аккредитацию при торгово-промышленной палате. Если лицензии нет — риск мошенничества очень высок.</p>
+        </div>
+    </div>
+
+    <!-- СТРАНИЦА 3: ТИПЫ КОНТРАГЕНТОВ (без имён) -->
+    <div id="brokersPage" style="display: none;">
+        <div class="hero-explain">
+            <h1 id="brokersTitle">⭐ Типы надёжных контрагентов</h1>
+            <p id="brokersDesc">Мы проверяем лицензии, комиссии, защиту средств. Ниже — типы брокеров, фондов и риэлтеров, которым можно доверять. Конкретные названия — только в платном отчёте.</p>
+        </div>
+        <div class="simple-grid" id="brokersGrid"></div>
+    </div>
+
+    <!-- СТРАНИЦА 4: ПЛАТНЫЙ ОТЧЁТ -->
+    <div id="reportPage" style="display: none;">
+        <div class="hero-explain">
+            <h1 id="reportTitle">📄 Детальный инвестиционный отчёт</h1>
+            <p id="reportDesc">Вы платите за глубокий анализ: оптимальный контрагент (конкретное название брокера, фонда или риэлтера), стратегия входа и прогноз. <strong>Никаких гарантий прибыли — только честный расчёт и рекомендации.</strong></p>
+        </div>
+        <div class="glass-card" style="text-align: center;">
+            <h3>💳 Стоимость отчёта — €19.99</h3>
+            <p>После оплаты мы подготовим PDF с разбором вашей ситуации (сумма, срок, риск, тип инструмента) и пришлём на email.</p>
+            <button id="fakePayBtn" class="btn-primary">💳 Оплатить (демо)</button>
+            <div id="paymentStatus" style="margin-top: 1rem;"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div id="footer-ru" style="display: block;">
+            <p>© 2025 HM&BC Market Consultancy — не брокер, не фонд, не риэлтер. Мы не даём гарантий прибыли.</p>
+            <p><a href="privacy.html">Политика конфиденциальности</a> | <a href="terms.html">Условия использования</a> | <a href="robots.txt" target="_blank">robots.txt</a> | <a href="sitemap.xml" target="_blank">sitemap.xml</a> | <a href="humans.txt" target="_blank">humans.txt</a></p>
+        </div>
+        <div id="footer-en" style="display: none;">
+            <p>© 2025 HM&BC Market Consultancy — not a broker, not a fund, not a realtor. We do not guarantee profits.</p>
+            <p><a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Use</a> | <a href="robots.txt" target="_blank">robots.txt</a> | <a href="sitemap.xml" target="_blank">sitemap.xml</a> | <a href="humans.txt" target="_blank">humans.txt</a></p>
+        </div>
+    </footer>
+</div>
+
+<script>
+    // ---------- ФОН ----------
+    const bgImages = ['bg1.jpg', 'bg2.jpg', 'bg3.jpg', 'bg4.jpg'];
+    document.getElementById('bgLayer').style.backgroundImage = `url(${bgImages[Math.floor(Math.random() * bgImages.length)]})`;
+
+    // ---------- PWA ----------
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+    document.getElementById('pwaInstallIcon')?.addEventListener('click', async () => {
+        if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; }
+        else alert('Для установки: Chrome/Edge — значок ⬇️ в адресной строке, iPhone — Поделиться → На экран «Домой»');
+    });
+
+    // ---------- ВНУТРЕННЯЯ БАЗА (обобщённая, без имён) ----------
+    const partnersData = {
+        conservative: [
+            { type: "Консервативный брокер", license: "FCA / CySEC", fee: "Спред от 0.1%, низкая комиссия", protection: "Страхование до €20 000", minDeposit: 0 },
+            { type: "Консервативный фонд", license: "UCITS", fee: "Комиссия за управление 0.5–1.5%", protection: "Раздельные счета", minDeposit: 100 }
+        ],
+        hybrid: [
+            { type: "Гибридный брокер", license: "CySEC / ASIC", fee: "Спред от 0.5%, вывод $5", protection: "До €20 000", minDeposit: 50 },
+            { type: "Гибридный фонд / ETF-площадка", license: "Регистрация проспекта", fee: "0.2–0.7% годовых", protection: "Раздельные счета", minDeposit: 100 }
+        ],
+        aggressive: [
+            { type: "Агрессивный брокер (крипто/деривативы)", license: "ЦРА / международная", fee: "0.1–0.5% от объёма", protection: "Холодное хранение", minDeposit: 10 },
+            { type: "Венчурный фонд / прямые инвестиции", license: "Регистрация в компетентном органе", fee: "2% управления + 20% прибыли", protection: "Депозитарий", minDeposit: 10000 }
+        ]
+    };
+
+    function getRecommendation(risk, amount, years) {
+        let candidates = partnersData[risk] || partnersData.hybrid;
+        let sorted = [...candidates].sort((a,b) => Math.abs((a.minDeposit||0) - amount) - Math.abs((b.minDeposit||0) - amount));
+        let rec = sorted[0];
+        let baseReturn = (risk === 'conservative') ? 5 : (risk === 'hybrid' ? 10 : 20);
+        let expected = (baseReturn * Math.min(years/5, 2)).toFixed(1);
+        return { ...rec, expectedReturn: expected };
+    }
+
+    // ---------- ЯЗЫКИ (ру / англ) с переводом для кнопок меню ----------
+    let currentLang = 'ru';
+    const translations = {
+        ru: {
+            mainTitle: '🔍 Что делает HM&BC?',
+            mainDesc: 'Мы консультируем по ЛЮБЫМ инвестиционным инструментам: акции, облигации, ETF, криптовалюты, недвижимость, венчурные фонды, паевые фонды, прямые инвестиции. Мы проверяем ЛЮБЫХ брокеров, фонды, риэлтеров, биржи, управляющие компании. Бесплатная часть — общая проверка и категории. Платный отчёт — персональная рекомендация.',
+            advertNote: '⭐ Здесь может быть ваша компания (брокер, фонд, риэлтер, биржа), если у вас есть лицензия и вы хотите предложить свои услуги нашим пользователям (размещение рекламы). Свяжитесь с нами.',
+            calcTitle: '📝 Ваши параметры', amountLabel: '💰 Сумма (€)', horizonLabel: '⏱ Горизонт (лет)', riskLabel: '⚖️ Риск-профиль',
+            getFull: '📄 Заказать детальный отчёт',
+            recommended: 'Рекомендуемый тип', license: 'Лицензия / регистрация', fee: 'Комиссия / спред', protection: 'Защита средств', minDeposit: 'Мин. вход', riskLevel: 'Риск',
+            freeNote: 'Бесплатно — только общая категория (консервативные, гибридные, агрессивные). Конкретные названия брокеров, фондов, риэлтеров и стратегию вы получите в платном отчёте.',
+            howTitle: '📘 Как выбрать брокера / фонд / риэлтера?', howDesc: 'Универсальные шаги для любой инвестиционной структуры.',
+            checkLicenseTitle: '🔐 Что проверять в первую очередь?', checkLicenseText: 'Лицензию / регистрацию. Для брокеров — CySEC, FCA, CFTC. Для фондов — регистрацию проспекта. Для риэлтеров — аккредитацию при торгово-промышленной палате. Если лицензии нет — риск мошенничества очень высок.',
+            brokersTitle: '⭐ Типы надёжных контрагентов', brokersDesc: 'Мы проверяем лицензии, комиссии, защиту средств. Ниже — типы брокеров, фондов и риэлтеров, которым можно доверять. Конкретные названия — только в платном отчёте.',
+            reportTitle: '📄 Детальный инвестиционный отчёт', reportDesc: 'Вы платите за глубокий анализ: оптимальный контрагент (конкретное название брокера, фонда или риэлтера), стратегия входа и прогноз. Никаких гарантий прибыли — только честный расчёт и рекомендации.',
+            pwaBtn: 'Установить приложение',
+            catConservative: '🛡️ Консервативные', catHybrid: '⚖️ Гибридные', catAggressive: '🚀 Рисковые',
+            step1: '1️⃣ Проверьте лицензию', step1text: 'Номер лицензии должен быть на сайте. Сверьте с реестром CySEC, FCA или местным регулятором.',
+            step2: '2️⃣ Посчитайте комиссию', step2text: 'Спред, комиссия за сделку, плата за вывод — всё это влияет на вашу прибыль.',
+            step3: '3️⃣ Узнайте, где лежат ваши деньги', step3text: 'Средства должны быть на отдельных счетах, а не в одном кошельке с деньгами контрагента.',
+            step4: '4️⃣ Начните с малого / демо-счёта', step4text: 'Потренируйтесь на виртуальных деньгах или с небольшой суммой.',
+            // ===== ПЕРЕВОД ДЛЯ КНОПОК МЕНЮ (ДОБАВЛЕНО) =====
+            navHome: '🏠 Главная',
+            navHowItWorks: '📘 Как выбрать?',
+            navBrokers: '⭐ Типы',
+            navReport: '📊 Платный отчёт'
+        },
+        en: {
+            mainTitle: '🔍 What does HM&BC do?',
+            mainDesc: 'We consult on ANY investment instruments: stocks, bonds, ETFs, crypto, real estate, venture funds, mutual funds, direct investments. We check ANY brokers, funds, realtors, exchanges, asset managers. Free part — general verification and categories. Paid report — personal recommendation.',
+            advertNote: '⭐ Your company (broker, fund, realtor, exchange) could be here if you have a license and want to offer services to our users (advertising). Contact us.',
+            calcTitle: '📝 Your parameters', amountLabel: '💰 Amount (€)', horizonLabel: '⏱ Horizon (years)', riskLabel: '⚖️ Risk profile',
+            getFull: '📄 Order detailed report',
+            recommended: 'Recommended type', license: 'License / registration', fee: 'Fee / spread', protection: 'Asset protection', minDeposit: 'Min. entry', riskLevel: 'Risk',
+            freeNote: 'Free — only general category (conservative, hybrid, aggressive). Specific names of brokers, funds, realtors and strategy are provided in the paid report.',
+            howTitle: '📘 How to choose a broker / fund / realtor?', howDesc: 'Universal steps for any investment structure.',
+            checkLicenseTitle: '🔐 What to check first?', checkLicenseText: 'License / registration. For brokers — CySEC, FCA, CFTC. For funds — prospectus registration. For realtors — accreditation with chamber of commerce. No license → high fraud risk.',
+            brokersTitle: '⭐ Types of reliable counterparties', brokersDesc: 'We check licenses, fees, asset protection. Below are types of brokers, funds and realtors you can trust. Specific names — only in the paid report.',
+            reportTitle: '📄 Detailed investment report', reportDesc: 'You pay for in‑depth analysis: optimal counterparty (specific name of broker, fund or realtor), entry strategy and forecast. No profit guarantees — only honest calculation and recommendations.',
+            pwaBtn: 'Install app',
+            catConservative: '🛡️ Conservative', catHybrid: '⚖️ Hybrid', catAggressive: '🚀 Aggressive',
+            step1: '1️⃣ Check license', step1text: 'The license number must be on the website. Verify with CySEC, FCA or local regulator.',
+            step2: '2️⃣ Count fees', step2text: 'Spread, commission per trade, withdrawal fee — all affect your profit.',
+            step3: '3️⃣ Know where your money is kept', step3text: 'Funds must be in segregated accounts, not mixed with counterparty\'s money.',
+            step4: '4️⃣ Start small / demo account', step4text: 'Practice with virtual money or a small amount.',
+            // ===== ПЕРЕВОД ДЛЯ КНОПОК МЕНЮ (ДОБАВЛЕНО) =====
+            navHome: '🏠 Home',
+            navHowItWorks: '📘 How to choose?',
+            navBrokers: '⭐ Types',
+            navReport: '📊 Paid report'
+        }
+    };
+
+    function updateAllTexts() {
+        const t = translations[currentLang];
+        document.getElementById('mainTitle').innerText = t.mainTitle;
+        document.getElementById('mainDesc').innerText = t.mainDesc;
+        document.getElementById('advertNote').innerText = t.advertNote;
+        document.getElementById('calcTitle').innerText = t.calcTitle;
+        document.getElementById('amountLabel').innerText = t.amountLabel;
+        document.getElementById('horizonLabel').innerText = t.horizonLabel;
+        document.getElementById('riskLabel').innerText = t.riskLabel;
+        document.getElementById('freeNote').innerText = t.freeNote;
+        document.getElementById('howTitle').innerText = t.howTitle;
+        document.getElementById('howDesc').innerText = t.howDesc;
+        document.getElementById('checkLicenseTitle').innerText = t.checkLicenseTitle;
+        document.getElementById('checkLicenseText').innerText = t.checkLicenseText;
+        document.getElementById('brokersTitle').innerText = t.brokersTitle;
+        document.getElementById('brokersDesc').innerText = t.brokersDesc;
+        document.getElementById('reportTitle').innerText = t.reportTitle;
+        document.getElementById('reportDesc').innerText = t.reportDesc;
+        document.getElementById('pwaBtnText').innerText = t.pwaBtn;
+        
+        // ===== ПЕРЕВОД КНОПОК МЕНЮ (ДОБАВЛЕНО) =====
+        document.getElementById('navHomeBtn').innerHTML = t.navHome;
+        document.getElementById('navHowItWorksBtn').innerHTML = t.navHowItWorks;
+        document.getElementById('navBrokersBtn').innerHTML = t.navBrokers;
+        document.getElementById('navReportBtn').innerHTML = t.navReport;
+        
+        document.getElementById('footer-ru').style.display = currentLang === 'ru' ? 'block' : 'none';
+        document.getElementById('footer-en').style.display = currentLang === 'en' ? 'block' : 'none';
+
+        const tipsDiv = document.getElementById('quickTips');
+        if (currentLang === 'ru') {
+            tipsDiv.innerHTML = `
+                <div class="simple-card"><h3>💡 Что такое спред?</h3><p>Спред — разница между ценой покупки и продажи. Чем ниже спред, тем дешевле торговать.</p></div>
+                <div class="simple-card"><h3>🏛️ Зачем нужна лицензия?</h3><p>Лицензия — гарантия, что ваши деньги не украдут и они на отдельных счетах.</p></div>
+                <div class="simple-card"><h3>📉 Риск — это нормально</h3><p>Чем выше риск, тем больше потенциальный доход — но и потерять можно больше.</p></div>
+            `;
+        } else {
+            tipsDiv.innerHTML = `
+                <div class="simple-card"><h3>💡 What is a spread?</h3><p>Spread is the difference between buy and sell price. Lower spread → cheaper trading.</p></div>
+                <div class="simple-card"><h3>🏛️ Why license matters?</h3><p>A license guarantees your money is segregated and safe.</p></div>
+                <div class="simple-card"><h3>📉 Risk is normal</h3><p>Higher risk may bring higher return — but also higher potential loss.</p></div>
+            `;
+        }
+
+        const stepsGrid = document.getElementById('stepsGrid');
+        stepsGrid.innerHTML = `
+            <div class="simple-card"><h3>${t.step1}</h3><p>${t.step1text}</p></div>
+            <div class="simple-card"><h3>${t.step2}</h3><p>${t.step2text}</p></div>
+            <div class="simple-card"><h3>${t.step3}</h3><p>${t.step3text}</p></div>
+            <div class="simple-card"><h3>${t.step4}</h3><p>${t.step4text}</p></div>
+        `;
+
+        const brokersGrid = document.getElementById('brokersGrid');
+        brokersGrid.innerHTML = `
+            <div class="simple-card"><h3>🛡️ ${t.catConservative}</h3><p>${currentLang === 'ru' ? 'Надёжные лицензии (CySEC, FCA). Низкие комиссии, защита до €20 000. Примеры: традиционные брокеры и фонды.' : 'Reliable licenses (CySEC, FCA). Low fees, protection up to €20 000.'}</p></div>
+            <div class="simple-card"><h3>⚖️ ${t.catHybrid}</h3><p>${currentLang === 'ru' ? 'Баланс риска и доходности. Доступ к ETF, копирование сделок, средние комиссии.' : 'Balance of risk and return. Access to ETFs, copy trading, medium fees.'}</p></div>
+            <div class="simple-card"><h3>🚀 ${t.catAggressive}</h3><p>${currentLang === 'ru' ? 'Высокая волатильность, криптоактивы, венчурные фонды. Потенциально высокая доходность — но и риск полной потери.' : 'High volatility, crypto assets, venture funds. Potentially high return — but also risk of total loss.'}</p></div>
+        `;
+    }
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
+        updateAllTexts();
+        localStorage.setItem('hmbc_language', lang);
+    }
+
+    const savedLang = localStorage.getItem('hmbc_language');
+    if (savedLang && (savedLang === 'ru' || savedLang === 'en')) {
+        currentLang = savedLang;
+    } else {
+        currentLang = 'ru';
+    }
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+    });
+
+    function showRecommendationUI(rec) {
+        const t = translations[currentLang];
+        const resultDiv = document.getElementById('resultBlock');
+        resultDiv.innerHTML = `
+            <div class="result-card">
+                <h3>${t.recommended}: ${rec.type}</h3>
+                <p><strong>${t.license}:</strong> ${rec.license}</p>
+                <p><strong>${t.fee}:</strong> ${rec.fee}</p>
+                <p><strong>💰 Прогнозная доходность:</strong> ~${rec.expectedReturn}% годовых</p>
+                <p><strong>${t.protection}:</strong> ${rec.protection}</p>
+                <p><strong>${t.minDeposit}:</strong> ${rec.minDeposit} €</p>
+                <button id="orderReportBtn" class="btn-primary">${t.getFull}</button>
+            </div>
+        `;
+        resultDiv.style.display = 'block';
+        document.getElementById('orderReportBtn')?.addEventListener('click', () => {
+            document.getElementById('mainPage').style.display = 'none';
+            document.getElementById('reportPage').style.display = 'block';
+        });
+    }
+
+    document.getElementById('getRecommendBtn')?.addEventListener('click', () => {
+        const amount = parseFloat(document.getElementById('amount').value);
+        const years = parseFloat(document.getElementById('years').value);
+        const risk = document.getElementById('risk').value;
+        const rec = getRecommendation(risk, amount, years);
+        if (!rec) {
+            document.getElementById('resultBlock').innerHTML = `<div class="result-card">⚠️ ${currentLang === 'ru' ? 'Нет рекомендации, измените параметры' : 'No recommendation, change parameters'}</div>`;
+            document.getElementById('resultBlock').style.display = 'block';
+            return;
+        }
+        showRecommendationUI(rec);
+    });
+
+    document.getElementById('navHomeBtn')?.addEventListener('click', () => {
+        document.getElementById('mainPage').style.display = 'block';
+        document.getElementById('howItWorksPage').style.display = 'none';
+        document.getElementById('brokersPage').style.display = 'none';
+        document.getElementById('reportPage').style.display = 'none';
+    });
+    document.getElementById('navHowItWorksBtn')?.addEventListener('click', () => {
+        document.getElementById('mainPage').style.display = 'none';
+        document.getElementById('howItWorksPage').style.display = 'block';
+        document.getElementById('brokersPage').style.display = 'none';
+        document.getElementById('reportPage').style.display = 'none';
+    });
+    document.getElementById('navBrokersBtn')?.addEventListener('click', () => {
+        document.getElementById('mainPage').style.display = 'none';
+        document.getElementById('howItWorksPage').style.display = 'none';
+        document.getElementById('brokersPage').style.display = 'block';
+        document.getElementById('reportPage').style.display = 'none';
+    });
+    document.getElementById('navReportBtn')?.addEventListener('click', () => {
+        document.getElementById('mainPage').style.display = 'none';
+        document.getElementById('howItWorksPage').style.display = 'none';
+        document.getElementById('brokersPage').style.display = 'none';
+        document.getElementById('reportPage').style.display = 'block';
+    });
+
+    document.getElementById('fakePayBtn')?.addEventListener('click', () => {
+        const statusDiv = document.getElementById('paymentStatus');
+        statusDiv.innerHTML = `⏳ ${currentLang === 'ru' ? 'Обработка платежа...' : 'Processing payment...'}`;
+        setTimeout(() => {
+            statusDiv.innerHTML = `✅ ${currentLang === 'ru' ? 'Оплата успешно завершена (демо). Ссылка на отчёт отправлена на email.' : 'Payment successful (demo). Report link sent to email.'}`;
+        }, 1000);
+    });
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js', { scope: './' }).catch(err => console.warn('SW registration failed:', err));
+    }
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        if (btn.dataset.lang === currentLang) btn.classList.add('active');
+        else btn.classList.remove('active');
+    });
+    updateAllTexts();
+</script>
+</body>
+</html>
