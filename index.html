@@ -30,7 +30,8 @@
 
         .install-area { text-align: center; margin: 0.5rem 0 1.5rem; }
         .install-tooltip { position: relative; display: inline-block; }
-        .pwa-icon-btn { background: none; border: none; cursor: pointer; display: inline-flex; flex-direction: column; align-items: center; gap: 0.3rem; font-weight: 600; color: #e8491d; padding: 8px 16px; background: transparent; transition: 0.2s; }
+        .pwa-icon-btn { background: none; border: none; cursor: pointer; display: inline-flex; flex-direction: column; align-items: center; gap: 0.3rem; font-weight: 600; color: #e8491d; padding: 8px 16px; background: transparent; transition: 0.1s; }
+        .pwa-icon-btn:active { transform: scale(0.95); }
         .pwa-icon-btn img { width: 96px; height: 96px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .tooltip-text { visibility: hidden; background-color: #1e2b4f; color: #fff; text-align: center; border-radius: 6px; padding: 5px 10px; position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 0.7rem; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 20; }
         .install-tooltip:hover .tooltip-text { visibility: visible; opacity: 1; }
@@ -83,11 +84,10 @@
                 <img src="icon-192x192.png" alt="Установить" width="96" height="96">
                 <span id="pwaBtnText">Установить приложение</span>
             </button>
-            <span class="tooltip-text" id="pwaTooltip">💡 Нажмите — установите как приложение.<br>• Chrome/Edge: появится диалог.<br>• iPhone: Поделиться → На экран «Домой».</span>
+            <span class="tooltip-text">💡 Нажмите — установите как приложение.<br>• Chrome/Edge: появится диалог.<br>• iPhone: Поделиться → На экран «Домой».</span>
         </div>
     </div>
 
-    <!-- СТРАНИЦА 1: ГЛАВНАЯ -->
     <div id="mainPage" style="display: block;">
         <div class="hero-explain">
             <h1 id="mainTitle">🔍 Что делает HM&BC?</h1>
@@ -116,7 +116,6 @@
         <div class="simple-grid" id="quickTips"></div>
     </div>
 
-    <!-- СТРАНИЦА 2: КАК ВЫБРАТЬ -->
     <div id="howItWorksPage" style="display: none;">
         <div class="hero-explain">
             <h1 id="howTitle">📘 Как выбрать брокера / фонд / риэлтера?</h1>
@@ -129,7 +128,6 @@
         </div>
     </div>
 
-    <!-- СТРАНИЦА 3: ТИПЫ -->
     <div id="brokersPage" style="display: none;">
         <div class="hero-explain">
             <h1 id="brokersTitle">⭐ Типы надёжных контрагентов</h1>
@@ -138,7 +136,6 @@
         <div class="simple-grid" id="brokersGrid"></div>
     </div>
 
-    <!-- СТРАНИЦА 4: ПЛАТНЫЙ ОТЧЁТ -->
     <div id="reportPage" style="display: none;">
         <div class="hero-explain">
             <h1 id="reportTitle">📄 Детальный инвестиционный отчёт</h1>
@@ -169,26 +166,14 @@
     const bgImages = ['bg1.jpg', 'bg2.jpg', 'bg3.jpg', 'bg4.jpg'];
     document.getElementById('bgLayer').style.backgroundImage = `url(${bgImages[Math.floor(Math.random() * bgImages.length)]})`;
 
-    // ========== PWA УСТАНОВКА (ТОЛЬКО ТВОЙ МЕХАНИЗМ, БЕЗ СТАРОГО АЛГОРИТМА) ==========
+    // ========== PWA УСТАНОВКА (ТОЛЬКО ВАШ КОД, БЕЗ АЛЕРТОВ) ==========
     let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => { 
-        e.preventDefault(); 
-        deferredPrompt = e; 
-    });
-    
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
     document.getElementById('pwaInstallIcon').addEventListener('click', async () => {
         if (deferredPrompt) {
             deferredPrompt.prompt();
             await deferredPrompt.userChoice;
             deferredPrompt = null;
-        } else {
-            // Этот alert сработает только если beforeinstallprompt не сработал
-            // (например, сайт уже установлен или браузер не поддерживает)
-            if (currentLang === 'ru') {
-                alert('Для установки: Chrome/Edge — значок ⬇️ в адресной строке, iPhone — Поделиться → На экран "Домой"');
-            } else {
-                alert('To install: Chrome/Edge — ⬇️ icon in address bar, iPhone — Share → Add to Home Screen');
-            }
         }
     });
 
@@ -233,7 +218,6 @@
             brokersTitle: '⭐ Типы надёжных контрагентов', brokersDesc: 'Мы проверяем лицензии, комиссии, защиту средств. Ниже — типы брокеров, фондов и риэлтеров, которым можно доверять. Конкретные названия — только в платном отчёте.',
             reportTitle: '📄 Детальный инвестиционный отчёт', reportDesc: 'Вы платите за глубокий анализ: оптимальный контрагент (конкретное название брокера, фонда или риэлтера), стратегия входа и прогноз. Никаких гарантий прибыли — только честный расчёт и рекомендации.',
             pwaBtn: 'Установить приложение',
-            pwaTooltip: '💡 Нажмите — установите как приложение.\n• Chrome/Edge: появится диалог.\n• iPhone: Поделиться → На экран «Домой».',
             catConservative: '🛡️ Консервативные', catHybrid: '⚖️ Гибридные', catAggressive: '🚀 Рисковые',
             step1: '1️⃣ Проверьте лицензию', step1text: 'Номер лицензии должен быть на сайте. Сверьте с реестром CySEC, FCA или местным регулятором.',
             step2: '2️⃣ Посчитайте комиссию', step2text: 'Спред, комиссия за сделку, плата за вывод — всё это влияет на вашу прибыль.',
@@ -254,7 +238,6 @@
             brokersTitle: '⭐ Types of reliable counterparties', brokersDesc: 'We check licenses, fees, asset protection. Below are types of brokers, funds and realtors you can trust. Specific names — only in the paid report.',
             reportTitle: '📄 Detailed investment report', reportDesc: 'You pay for in‑depth analysis: optimal counterparty (specific name of broker, fund or realtor), entry strategy and forecast. No profit guarantees — only honest calculation and recommendations.',
             pwaBtn: 'Install app',
-            pwaTooltip: '💡 Click — install as app.\n• Chrome/Edge: dialog appears.\n• iPhone: Share → Add to Home Screen.',
             catConservative: '🛡️ Conservative', catHybrid: '⚖️ Hybrid', catAggressive: '🚀 Aggressive',
             step1: '1️⃣ Check license', step1text: 'The license number must be on the website. Verify with CySEC, FCA or local regulator.',
             step2: '2️⃣ Count fees', step2text: 'Spread, commission per trade, withdrawal fee — all affect your profit.',
@@ -283,7 +266,6 @@
         document.getElementById('reportTitle').innerText = t.reportTitle;
         document.getElementById('reportDesc').innerText = t.reportDesc;
         document.getElementById('pwaBtnText').innerText = t.pwaBtn;
-        document.getElementById('pwaTooltip').innerHTML = t.pwaTooltip;
         document.getElementById('navHomeBtn').innerHTML = t.navHome;
         document.getElementById('navHowItWorksBtn').innerHTML = t.navHowItWorks;
         document.getElementById('navBrokersBtn').innerHTML = t.navBrokers;
