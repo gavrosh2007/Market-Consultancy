@@ -80,8 +80,7 @@
     <div class="install-area">
         <div class="install-tooltip">
             <button id="pwaInstallIcon" class="pwa-icon-btn">
-                <img src="icon-192x192.png" alt="Установить" width="96" height="96" onerror="this.style.display='none'; this.parentNode.querySelector('.fallback-text').style.display='inline-block';">
-                <span class="fallback-text" style="display:none;">📱</span>
+                <img src="icon-192x192.png" alt="Установить" width="96" height="96">
                 <span id="pwaBtnText">Установить приложение</span>
             </button>
             <span class="tooltip-text" id="pwaTooltip">💡 Нажмите — установите как приложение.<br>• Chrome/Edge: появится диалог.<br>• iPhone: Поделиться → На экран «Домой».</span>
@@ -170,16 +169,26 @@
     const bgImages = ['bg1.jpg', 'bg2.jpg', 'bg3.jpg', 'bg4.jpg'];
     document.getElementById('bgLayer').style.backgroundImage = `url(${bgImages[Math.floor(Math.random() * bgImages.length)]})`;
 
-    // ---------- PWA УСТАНОВКА (механизм из твоего кода) ----------
+    // ========== PWA УСТАНОВКА (ТОЛЬКО ТВОЙ МЕХАНИЗМ, БЕЗ СТАРОГО АЛГОРИТМА) ==========
     let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+    window.addEventListener('beforeinstallprompt', (e) => { 
+        e.preventDefault(); 
+        deferredPrompt = e; 
+    });
+    
     document.getElementById('pwaInstallIcon').addEventListener('click', async () => {
         if (deferredPrompt) {
             deferredPrompt.prompt();
             await deferredPrompt.userChoice;
             deferredPrompt = null;
         } else {
-            alert(currentLang === 'ru' ? 'Для установки: Chrome/Edge — значок ⬇️ в адресной строке, iPhone — Поделиться → На экран "Домой"' : 'To install: Chrome/Edge — ⬇️ icon in address bar, iPhone — Share → Add to Home Screen');
+            // Этот alert сработает только если beforeinstallprompt не сработал
+            // (например, сайт уже установлен или браузер не поддерживает)
+            if (currentLang === 'ru') {
+                alert('Для установки: Chrome/Edge — значок ⬇️ в адресной строке, iPhone — Поделиться → На экран "Домой"');
+            } else {
+                alert('To install: Chrome/Edge — ⬇️ icon in address bar, iPhone — Share → Add to Home Screen');
+            }
         }
     });
 
